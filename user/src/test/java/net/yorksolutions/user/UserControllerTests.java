@@ -20,7 +20,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class UserControllerTests {
 
-    @InjectMocks
+    @InjectMocks // Mockito shall create this for me, inject all mocks that it can, and give me the created
+                 //     thing
     @Spy
     UserController controller;
 
