@@ -49,4 +49,12 @@ public class UserController {
 
         repository.save(new UserAccount());
     }
+
+    @GetMapping("/isAuthorized")
+    public void isAuthorized(@RequestParam UUID token) {
+        if (tokenMap.containsKey(token))
+            return;
+
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+    }
 }
