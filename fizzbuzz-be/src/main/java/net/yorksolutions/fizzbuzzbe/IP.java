@@ -1,5 +1,6 @@
 package net.yorksolutions.fizzbuzzbe;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Objects;
@@ -8,7 +9,8 @@ public class IP {
     @JsonProperty("ip")
     final String ipAddress;
 
-    public IP(String ipAddress) {
+    @JsonCreator
+    public IP(@JsonProperty("ip") String ipAddress) {
         this.ipAddress = ipAddress;
     }
 

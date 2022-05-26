@@ -16,46 +16,20 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/")
 public class FizzBuzzController {
-    private final RestTemplate rest;
-
     @Autowired
-    public FizzBuzzController() {
-        rest = new RestTemplate();
-    }
-
-    public FizzBuzzController(RestTemplate rest) {
-        this.rest = rest;
-    }
-
-    public void checkAuthorized(UUID token) {
-        String url = "http://localhost:8081/isAuthorized?token=" + token;
-        final ResponseEntity<Void> response = rest.getForEntity(url, Void.class);
-
-        switch (response.getStatusCode()) {
-            case OK:
-                return;
-
-            case UNAUTHORIZED:
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-
-            default:
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @GetMapping("/")
-    String echo(@RequestParam String input) {
-        return input;
-    }
+    FizzBuzzService service;
 
     @GetMapping("/fizzbuzz")
-    String fizzbuzz(UUID token, @RequestParam Integer input) {
-        checkAuthorized(token);
-        return FizzBuzz.play(input);
+    String fizzbuzz(@RequestParam UUID token, @RequestParam Integer input) {
+        return service.fizzbuzz(token, input);
     }
 
-    public IP ip(UUID token, HttpServletRequest request) {
-        checkAuthorized(token);
-        return new IP(request.getRemoteAddr());
+    @GetMapping("/ip")
+    public IP ip(@RequestParam UUID token, HttpServletRequest request) {
+        return service.ip(token, request);
+    }
+
+    public void setService(FizzBuzzService service) {
+        this.service = service;
     }
 }
