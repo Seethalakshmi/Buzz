@@ -16,7 +16,8 @@ import java.util.UUID;
 @RequestMapping("/")
 public class UserController {
     private final UserAccountRepository repository;
-    private final HashMap<UUID, Long> tokenMap;
+
+    private HashMap<UUID, Long> tokenMap;
 
     @Autowired
     public UserController(@NonNull UserAccountRepository repository) {
@@ -56,5 +57,9 @@ public class UserController {
             return;
 
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+    }
+
+    public void setTokenMap(HashMap<UUID, Long> tokenMap) {
+        this.tokenMap = tokenMap;
     }
 }
