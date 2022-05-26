@@ -1,107 +1,76 @@
 package net.yorksolutions.user;
 
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class UserControllerTests {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class UserControllerTests {
+    @LocalServerPort
+    int port;
 
-    @InjectMocks // Mockito shall create this for me, inject all mocks that it can, and give me the created
-                 //     thing
-    @Spy
+    @Autowired // Give me the item that Spring created for me
     UserController controller;
 
     @Mock
-    UserAccountRepository repository;
+    UserService service;
 
-    @Mock
-    HashMap<UUID, Long> tokenMap;
-
-    @Test
-    void itShouldReturnUnauthWhenUserIsWrong() {
-        final var username = UUID.randomUUID().toString();
-        final var password = UUID.randomUUID().toString();
-        lenient().when(repository.findByUsernameAndPassword(username, password))
-                .thenReturn(Optional.empty());
-        lenient().when(repository.findByUsernameAndPassword(not(eq(username)), eq(password)))
-                .thenReturn(Optional.of(new UserAccount()));
-        assertThrows(ResponseStatusException.class, () -> controller.login(username, password));
+    @BeforeEach
+    void setup() {
+        controller.setService(service);
     }
 
     @Test
-    void itShouldReturnUnauthWhenPassIsWrong() {
-        final var username = UUID.randomUUID().toString();
-        final var password = UUID.randomUUID().toString();
-        lenient().when(repository.findByUsernameAndPassword(username, password))
-                .thenReturn(Optional.empty());
-        lenient().when(repository.findByUsernameAndPassword(eq(username), not(eq(password))))
-                .thenReturn(Optional.of(new UserAccount()));
-        assertThrows(ResponseStatusException.class, () -> controller.login(username, password));
+    void itShouldRespondUnauthWhenTokenIsWrong() {
+        TestRestTemplate rest = new TestRestTemplate();
+        final UUID token = UUID.randomUUID();
+        String url = "http://localhost:" + port + "/isAuthorized?token=" + token;
+        doThrow(new ResponseStatusException(HttpStatus.ACCEPTED)).when(service).isAuthorized(token);
+        final ResponseEntity<Void> response = rest.getForEntity(url, Void.class);
+        assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
     }
 
     @Test
-    void itShouldMapTheUUIDToTheIdWhenLoginSuccess() {
-        final var username = UUID.randomUUID().toString();
-        final var password = UUID.randomUUID().toString();
-        final Long id = (long) (Math.random() * 9999999); // the id of the user account associated with username, password
-        final UserAccount expected = new UserAccount();
-        expected.id = id;
-        expected.username = username;
-        expected.password = password;
-        when(repository.findByUsernameAndPassword(username, password))
-                .thenReturn(Optional.of(expected));
-        ArgumentCaptor<UUID> captor = ArgumentCaptor.forClass(UUID.class);
-        when(tokenMap.put(captor.capture(), eq(id))).thenReturn(0L);
-        final var token = controller.login(username, password);
-        assertEquals(token, captor.getValue());
-    }
-
-    @Test
-    void itShouldReturnInvalidIfUsernameExists() {
-        final String username = "some username";
-        when(repository.findByUsername(username)).thenReturn(Optional.of(
-                new UserAccount()));
-        assertThrows(ResponseStatusException.class, () -> controller.register(username, ""));
-    }
-
-    @Test
-    void itShouldSaveANewUserAccountWhenUserIsUnique() {
+    void itShouldRespondWithTokenWhenLoginValid() {
+        final TestRestTemplate rest = new TestRestTemplate();
         final String username = "some username";
         final String password = "some password";
-        when(repository.findByUsername(username)).thenReturn(Optional.empty());
-        ArgumentCaptor<UserAccount> captor = ArgumentCaptor.forClass(UserAccount.class);
-        when(repository.save(captor.capture())).thenReturn(new UserAccount());
-        Assertions.assertDoesNotThrow(() -> controller.register(username, password));
-        assertEquals(new UserAccount(), captor.getValue());
+        String url = "http://localhost:" + port + "/login?username=" + username + "&password=" + password;
+        final UUID token = UUID.randomUUID();
+        when(service.login(username, password)).thenReturn(token);
+        final ResponseEntity<UUID> response = rest.getForEntity(url, UUID.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(token, response.getBody());
     }
 
     @Test
-    void itShouldNotThrowWhenTokenIsCorrect() {
-        final UUID token = UUID.randomUUID();
-        when(tokenMap.containsKey(token)).thenReturn(true);
-        assertDoesNotThrow(() -> controller.isAuthorized(token));
-    }
-
-    @Test
-    void itShouldThrowUnauthWhenTokenIsBad() {
-        final UUID token = UUID.randomUUID();
-        when(tokenMap.containsKey(token)).thenReturn(false);
-        final ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> controller.isAuthorized(token));
-        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
+    void itShouldReturnConflictWhenUsernameTaken() {
+        final TestRestTemplate rest = new TestRestTemplate();
+        final String username = "some username";
+        final String password = "some password";
+        String url = "http://localhost:" + port + "/register?username=" + username + "&password=" + password;
+        doThrow(new ResponseStatusException(HttpStatus.ACCEPTED)).when(service).register(username, password);
+        final ResponseEntity<Void> response = rest.getForEntity(url, Void.class);
+        assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
     }
 }

@@ -15,55 +15,29 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/")
 public class UserController {
-    private UserAccountRepository repository;
-
-    private HashMap<UUID, Long> tokenMap;
+    private UserService service;
 
     @Autowired
-    public UserController(@NonNull UserAccountRepository repository) {
-        this.repository = repository;
-        tokenMap = new HashMap<>();
-    }
-
-    public UserController(@NonNull UserAccountRepository repository,
-                          @NonNull HashMap<UUID, Long> tokenMap) {
-        this.repository = repository;
-        this.tokenMap = tokenMap;
+    public UserController(@NonNull UserService service) {
+        this.service = service;
     }
 
     @GetMapping("/login")
     UUID login(@RequestParam String username, @RequestParam String password) {
-        var result = repository.findByUsernameAndPassword(username, password);
-
-        if (result.isEmpty())
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-
-        final var token = UUID.randomUUID();
-        tokenMap.put(token, result.get().id);
-        return token;
+        return service.login(username, password);
     }
 
     @GetMapping("/register")
     public void register(@RequestParam String username, @RequestParam String password) {
-        if (repository.findByUsername(username).isPresent())
-            throw new ResponseStatusException(HttpStatus.CONFLICT);
-
-        repository.save(new UserAccount());
+        service.register(username, password);
     }
 
     @GetMapping("/isAuthorized")
     public void isAuthorized(@RequestParam UUID token) {
-        if (tokenMap.containsKey(token))
-            return;
-
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        service.isAuthorized(token);
     }
 
-    public void setRepository(UserAccountRepository repository) {
-        this.repository = repository;
-    }
-
-    public void setTokenMap(HashMap<UUID, Long> tokenMap) {
-        this.tokenMap = tokenMap;
+    public void setService(UserService service) {
+        this.service = service;
     }
 }
