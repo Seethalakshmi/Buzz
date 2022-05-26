@@ -3,6 +3,7 @@ package net.yorksolutions.fizzbuzzbe;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,8 +17,12 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/")
 public class FizzBuzzController {
-    @Autowired
     FizzBuzzService service;
+
+    @Autowired
+    public FizzBuzzController(@NonNull FizzBuzzService service) {
+        this.service = service;
+    }
 
     @GetMapping("/fizzbuzz")
     String fizzbuzz(@RequestParam UUID token, @RequestParam Integer input) {

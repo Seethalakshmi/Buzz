@@ -25,7 +25,7 @@ public class FizzBuzzServiceTests {
 
     @InjectMocks
     @Spy
-    FizzBuzzController controller;
+    FizzBuzzService service;
 
     @Mock
     HttpServletRequest request;
@@ -33,56 +33,56 @@ public class FizzBuzzServiceTests {
     @Mock
     RestTemplate rest;
 
-//    @Test
-//    void itShouldThrowUnauthWhenOtherStatusIsUnauth() {
-//        final UUID token = UUID.randomUUID();
-//        String url = "http://localhost:8081/isAuthorized?token=" + token;
-//        when(rest.getForEntity(url, Void.class))
-//                .thenReturn(new ResponseEntity<>(HttpStatus.UNAUTHORIZED));
-//        final ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-//                () -> controller.checkAuthorized(token));
-//        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
-//    }
-//
-//    @Test
-//    void itShouldThrowIntErrWhenOtherStatusIsOther() {
-//        final UUID token = UUID.randomUUID();
-//        String url = "http://localhost:8081/isAuthorized?token=" + token;
-//        when(rest.getForEntity(url, Void.class))
-//                .thenReturn(new ResponseEntity<>(HttpStatus.CONFLICT));
-//        final ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-//                () -> controller.checkAuthorized(token));
-//        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
-//    }
-//
-//    @Test
-//    void itShouldNotThrowWhenOtherStatusIsOK() {
-//        final UUID token = UUID.randomUUID();
-//        String url = "http://localhost:8081/isAuthorized?token=" + token;
-//        when(rest.getForEntity(url, Void.class))
-//                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
-//        assertDoesNotThrow(() -> controller.checkAuthorized(token));
-//    }
-//
-//    @Test
-//    void itShouldReturnTheClientsIP() {
-//        final String ip = "1.2.3.4";
-//        final IP expected = new IP(ip);
-//        final var token = UUID.randomUUID();
-//        when(request.getRemoteAddr()).thenReturn(ip);
-//        doNothing().when(controller).checkAuthorized(any());
-//        assertEquals(expected, controller.ip(token, request));
-//    }
-//
-//    @Test
-//    void itShouldCallPlay() {
-//        final String expected = "some string";
-//        final var token = UUID.randomUUID();
-//
-//        doNothing().when(controller).checkAuthorized(any());
-//        try (final var mocked = Mockito.mockStatic(FizzBuzz.class)) {
-//            mocked.when(() -> FizzBuzz.play(99)).thenReturn(expected);
-//            assertEquals(expected, controller.fizzbuzz(token, 99));
-//        }
-//    }
+    @Test
+    void itShouldThrowUnauthWhenOtherStatusIsUnauth() {
+        final UUID token = UUID.randomUUID();
+        String url = "http://localhost:8081/isAuthorized?token=" + token;
+        when(rest.getForEntity(url, Void.class))
+                .thenReturn(new ResponseEntity<>(HttpStatus.UNAUTHORIZED));
+        final ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> service.checkAuthorized(token));
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
+    }
+
+    @Test
+    void itShouldThrowIntErrWhenOtherStatusIsOther() {
+        final UUID token = UUID.randomUUID();
+        String url = "http://localhost:8081/isAuthorized?token=" + token;
+        when(rest.getForEntity(url, Void.class))
+                .thenReturn(new ResponseEntity<>(HttpStatus.CONFLICT));
+        final ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> service.checkAuthorized(token));
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+    }
+
+    @Test
+    void itShouldNotThrowWhenOtherStatusIsOK() {
+        final UUID token = UUID.randomUUID();
+        String url = "http://localhost:8081/isAuthorized?token=" + token;
+        when(rest.getForEntity(url, Void.class))
+                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
+        assertDoesNotThrow(() -> service.checkAuthorized(token));
+    }
+
+    @Test
+    void itShouldReturnTheClientsIP() {
+        final String ip = "1.2.3.4";
+        final IP expected = new IP(ip);
+        final var token = UUID.randomUUID();
+        when(request.getRemoteAddr()).thenReturn(ip);
+        doNothing().when(service).checkAuthorized(any());
+        assertEquals(expected, service.ip(token, request));
+    }
+
+    @Test
+    void itShouldCallPlay() {
+        final String expected = "some string";
+        final var token = UUID.randomUUID();
+
+        doNothing().when(service).checkAuthorized(any());
+        try (final var mocked = Mockito.mockStatic(FizzBuzz.class)) {
+            mocked.when(() -> FizzBuzz.play(99)).thenReturn(expected);
+            assertEquals(expected, service.fizzbuzz(token, 99));
+        }
+    }
 }
