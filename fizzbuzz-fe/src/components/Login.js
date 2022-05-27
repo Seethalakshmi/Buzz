@@ -4,6 +4,7 @@ import {LOGIN_START, UPDATE_CREDENTIALS} from "../modules/user";
 
 export default function Login({_useSelector=useSelector, _useDispatch=useDispatch}) {
     const credentials = _useSelector(state => state.credentials)
+    const loginPending = _useSelector(state => state.loginPending)
     const dispatch = _useDispatch()
 
     function updateUsername(username) {
@@ -22,6 +23,6 @@ export default function Login({_useSelector=useSelector, _useDispatch=useDispatc
     return <Form onSubmit={handleSubmit}>
         <Form.Control placeholder='Username' onChange={e => updateUsername(e.target.value)}/>
         <Form.Control placeholder='Password' onChange={e => updatePassword(e.target.value)}/>
-        <Button type='submit'>Login</Button>
+        <Button type='submit' disabled={loginPending}>Login</Button>
     </Form>
 }

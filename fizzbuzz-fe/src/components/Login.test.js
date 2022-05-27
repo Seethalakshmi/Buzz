@@ -37,3 +37,15 @@ it('should dispatch LOGIN_START when user clicks login', () => {
     userEvent.click(screen.getByText('Login'))
     expect(dispatch).toHaveBeenCalledWith({type: LOGIN_START})
 })
+
+it('should enable the login butten when login not pending', () => {
+    const state = {loginPending: false}
+    render(<Login _useSelector={fn => fn(state)} _useDispatch={() => {}}/>)
+    expect(screen.queryByText('Login').getAttribute('disabled')).toBeNull()
+})
+
+it('should disable the login butten when login pending', () => {
+    const state = {loginPending: true}
+    render(<Login _useSelector={fn => fn(state)} _useDispatch={() => {}}/>)
+    expect(screen.getByText('Login').getAttribute('disabled')).not.toBeNull()
+})
