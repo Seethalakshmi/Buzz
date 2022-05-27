@@ -3,8 +3,8 @@ import {useDispatch, useSelector} from "react-redux";
 import {initiateLogin, UPDATE_CREDENTIALS} from "../modules/user";
 
 export default function Login({_useSelector=useSelector, _useDispatch=useDispatch}) {
-    const credentials = _useSelector(state => state.credentials)
-    const loginPending = _useSelector(state => state.loginPending)
+    const credentials = _useSelector(state => state.user.credentials)
+    const loginPending = _useSelector(state => state.user.loginPending)
     const dispatch = _useDispatch()
 
     function updateUsername(username) {

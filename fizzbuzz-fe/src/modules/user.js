@@ -62,7 +62,7 @@ export default function reducer(state = initialState, action) {
 export function initiateLogin(_fetch=fetch) {
     return async function sideEffect(dispatch, getState) {
         dispatch({type: LOGIN_START})
-        const {username, password} = getState().credentials
+        const {username, password} = getState().user.credentials
         const url = `http://localhost:8081/login?username=${username}&password=${password}`
         const response = await _fetch(url)
 

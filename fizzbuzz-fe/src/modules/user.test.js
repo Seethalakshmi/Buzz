@@ -65,7 +65,7 @@ it('should dispatch LOGIN_START then LOGIN_FAILURE when initiateLogin w/ bad cre
     }
 
     const dispatch = jest.fn()
-    const state = {credentials: {username, password}}
+    const state = {user: {credentials: {username, password}}}
     const getState = () => state
     const sideEffect = initiateLogin(mockFetch)
     await sideEffect(dispatch, getState)
@@ -90,7 +90,7 @@ it('should dispatch LOGIN_START then LOGIN_SUCCESS when initiateLogin w/ good cr
     }
 
     const dispatch = jest.fn()
-    const state = {credentials: {username, password}}
+    const state = {user: {credentials: {username, password}}}
     const getState = () => state
     await initiateLogin(mockFetch)(dispatch, getState)
     expect(_url).toBe(url)

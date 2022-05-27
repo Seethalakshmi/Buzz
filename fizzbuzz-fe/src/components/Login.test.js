@@ -12,7 +12,7 @@ it('should show username and password field', () => {
 it('should update username when user types in username box', () => {
     const dispatch = jest.fn()
     const password = 'some password'
-    const state = {credentials: {username: '', password}}
+    const state = {user: {credentials: {username: '', password}}}
     render(<Login _useSelector={fn => fn(state)} _useDispatch={()=>dispatch}/>)
     const usernameElement = screen.getByPlaceholderText('Username')
     const username = 'some username'
@@ -23,7 +23,7 @@ it('should update username when user types in username box', () => {
 it('should update password when user types in password box', () => {
     const dispatch = jest.fn()
     const username = 'some username'
-    const state = {credentials: {username, password: ''}}
+    const state = {user: {credentials: {username, password: ''}}}
     render(<Login _useSelector={fn => fn(state)} _useDispatch={()=>dispatch}/>)
     const passwordElement = screen.getByPlaceholderText('Password')
     const password = 'some password'
@@ -39,13 +39,13 @@ it('should dispatch initiateLogin when user clicks login', () => {
 })
 
 it('should enable the login button when login not pending', () => {
-    const state = {loginPending: false}
+    const state = {user: {loginPending: false}}
     render(<Login _useSelector={fn => fn(state)} _useDispatch={() => {}}/>)
     expect(screen.queryByText('Login').getAttribute('disabled')).toBeNull()
 })
 
 it('should disable the login button when login pending', () => {
-    const state = {loginPending: true}
+    const state = {user: {loginPending: true}}
     render(<Login _useSelector={fn => fn(state)} _useDispatch={() => {}}/>)
     expect(screen.getByText('Login').getAttribute('disabled')).not.toBeNull()
 })
