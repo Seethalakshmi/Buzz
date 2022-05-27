@@ -9,10 +9,10 @@ it('should show the login component when not logged in', () => {
   expect(screen.getByText(expectedText)).toBeInTheDocument()
 })
 
-it('should not show the login component when logged in', () => {
+it('should show the fizzbuzz component when logged in', () => {
   const state = {user: {token: 'some token'}}
   const expectedText = 'some text here'
   const mock = () => <>{expectedText}</>
-  render(<App _useSelector={fn => fn(state)} LoginC={mock}/>)
-  expect(screen.queryByText(expectedText)).not.toBeInTheDocument()
+  render(<App _useSelector={fn => fn(state)} FizzBuzzC={mock}/>)
+  expect(screen.getByText(expectedText)).toBeInTheDocument()
 })

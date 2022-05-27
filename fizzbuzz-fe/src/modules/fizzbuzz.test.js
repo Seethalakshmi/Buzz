@@ -43,7 +43,7 @@ it('should dispatch FIZZ_START w/ token and input then FIZZ_SUCCESS when initiat
         _url = url
         return new Promise(resolve => resolve({
             ok: true,
-            json: () => new Promise(res => res(result))
+            text: () => new Promise(res => res(result))
         }))
     }
 

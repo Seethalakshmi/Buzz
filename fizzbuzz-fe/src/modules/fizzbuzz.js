@@ -40,7 +40,7 @@ export function initiateFizz(token, input, _fetch=fetch) {
         const response = await _fetch(url)
 
         if (response.ok) {
-            const result = await response.json()
+            const result = await response.text()
             dispatch({type: FIZZ_SUCCESS, payload: result})
         }
     }
