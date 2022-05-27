@@ -7,7 +7,7 @@ export const LOGOUT = 'fizzbuzz/user/LOGOUT'
 
 // InitialState
 const initialState = {
-    isLoggedIn: false,
+    token: null,
     loginPending: false,
     credentials: {username: '', password: ''}
 }
@@ -24,7 +24,7 @@ export default function reducer(state = initialState, action) {
         case LOGIN_SUCCESS:
             return {
                 ...state,
-                isLoggedIn: true,
+                token: action.payload,
                 loginPending: false
             }
 
@@ -46,11 +46,11 @@ export default function reducer(state = initialState, action) {
         case LOGOUT:
             return {
                 ...state,
-                isLoggedIn: false,
                 credentials: {
                     username: '',
                     password: ''
-                }
+                },
+                token: null
             }
 
         default:
@@ -66,9 +66,10 @@ export function initiateLogin(_fetch=fetch) {
         const url = `http://localhost:8081/login?username=${username}&password=${password}`
         const response = await _fetch(url)
 
-        if (response.ok)
-            dispatch({type: LOGIN_SUCCESS})
-        else
+        if (response.ok) {
+            const token = await response.json()
+            dispatch({type: LOGIN_SUCCESS, payload: token})
+        } else
             dispatch({type: LOGIN_FAILURE})
     }
 }
