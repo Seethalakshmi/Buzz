@@ -73,3 +73,23 @@ it('should dispatch LOGIN_START then LOGIN_FAILURE when initiateLogin w/ bad cre
     expect(dispatch).toHaveBeenCalledWith({type: LOGIN_FAILURE})
 })
 
+it('should dispatch LOGIN_START then LOGIN_SUCCESS when initiateLogin w/ good creds', async () => {
+    const username = 'some username'
+    const password = 'some password'
+    const url = `http://localhost:8081/login?username=${username}&password=${password}`
+    let _url
+
+    const mockFetch = (url) => {
+        _url = url
+        return new Promise(resolve => resolve({ok: true}))
+    }
+
+    const dispatch = jest.fn()
+    const state = {credentials: {username, password}}
+    const getState = () => state
+    await initiateLogin(mockFetch)(dispatch, getState)
+    expect(_url).toBe(url)
+    expect(dispatch).toHaveBeenCalledWith({type: LOGIN_START})
+    expect(dispatch).toHaveBeenCalledWith({type: LOGIN_SUCCESS})
+})
+

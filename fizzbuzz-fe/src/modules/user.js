@@ -66,8 +66,8 @@ export function initiateLogin(_fetch=fetch) {
         const url = `http://localhost:8081/login?username=${username}&password=${password}`
         const response = await _fetch(url)
 
-        if (response.ok) {}
-            // do nothing
+        if (response.ok)
+            dispatch({type: LOGIN_SUCCESS})
         else
             dispatch({type: LOGIN_FAILURE})
     }
