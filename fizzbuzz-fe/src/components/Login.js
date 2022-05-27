@@ -1,6 +1,6 @@
 import {Button, Form} from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
-import {LOGIN_START, UPDATE_CREDENTIALS} from "../modules/user";
+import {initiateLogin, UPDATE_CREDENTIALS} from "../modules/user";
 
 export default function Login({_useSelector=useSelector, _useDispatch=useDispatch}) {
     const credentials = _useSelector(state => state.credentials)
@@ -17,7 +17,7 @@ export default function Login({_useSelector=useSelector, _useDispatch=useDispatc
 
     function handleSubmit(event) {
         event.preventDefault()
-        dispatch({type: LOGIN_START})
+        dispatch(initiateLogin())
     }
 
     return <Form onSubmit={handleSubmit}>

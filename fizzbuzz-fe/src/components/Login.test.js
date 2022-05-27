@@ -1,7 +1,7 @@
 import {render, screen} from "@testing-library/react";
 import Login from "./Login";
 import userEvent from "@testing-library/user-event";
-import {LOGIN_START, UPDATE_CREDENTIALS} from "../modules/user";
+import {UPDATE_CREDENTIALS} from "../modules/user";
 
 it('should show username and password field', () => {
     render(<Login _useSelector={() => {}} _useDispatch={() => {}}/>)
@@ -31,20 +31,20 @@ it('should update password when user types in password box', () => {
     expect(dispatch).toHaveBeenCalledWith({type: UPDATE_CREDENTIALS, payload: {username, password}})
 })
 
-it('should dispatch LOGIN_START when user clicks login', () => {
+it('should dispatch initiateLogin when user clicks login', () => {
     const dispatch = jest.fn()
     render(<Login _useSelector={() => {}} _useDispatch={() => dispatch}/>)
     userEvent.click(screen.getByText('Login'))
-    expect(dispatch).toHaveBeenCalledWith({type: LOGIN_START})
+    expect(typeof dispatch.mock.calls[0][0]).toBe('function')
 })
 
-it('should enable the login butten when login not pending', () => {
+it('should enable the login button when login not pending', () => {
     const state = {loginPending: false}
     render(<Login _useSelector={fn => fn(state)} _useDispatch={() => {}}/>)
     expect(screen.queryByText('Login').getAttribute('disabled')).toBeNull()
 })
 
-it('should disable the login butten when login pending', () => {
+it('should disable the login button when login pending', () => {
     const state = {loginPending: true}
     render(<Login _useSelector={fn => fn(state)} _useDispatch={() => {}}/>)
     expect(screen.getByText('Login').getAttribute('disabled')).not.toBeNull()
