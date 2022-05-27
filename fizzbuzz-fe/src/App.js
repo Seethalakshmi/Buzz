@@ -1,21 +1,15 @@
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import {useSelector} from "react-redux";
+import Login from "./components/Login";
+
+function App({_useSelector=useSelector, LoginC=Login}) {
+  const isLoggedIn = _useSelector(state => state.isLoggedIn)
+
+  if (!isLoggedIn)
+    return <LoginC/>
+  else
+    return <>
+      You shall not pass
+    </>
 }
 
 export default App;
